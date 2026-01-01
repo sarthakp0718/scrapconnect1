@@ -49,9 +49,9 @@ const Footer = () => {
             
             {/* Contact Info */}
             <div className="space-y-3">
-              <a href="mailto:hello@scrapconnect.in" className="flex items-center gap-3 text-surface-dark-foreground/70 hover:text-primary transition-colors">
+              <a href="mailto:scrapconnect@gmail.com" className="flex items-center gap-3 text-surface-dark-foreground/70 hover:text-primary transition-colors">
                 <Mail className="w-4 h-4" />
-                hello@scrapconnect.in
+                scrapconnect@gmail.com
               </a>
               <a href="tel:+911234567890" className="flex items-center gap-3 text-surface-dark-foreground/70 hover:text-primary transition-colors">
                 <Phone className="w-4 h-4" />
@@ -59,7 +59,7 @@ const Footer = () => {
               </a>
               <div className="flex items-start gap-3 text-surface-dark-foreground/70">
                 <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
-                <span>123 Green Tech Park, Bangalore, Karnataka 560001</span>
+                <span>Scrapconnect Headquarters</span>
               </div>
             </div>
           </div>
