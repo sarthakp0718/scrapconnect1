@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { MapPin, User, Phone, Star, Truck, Clock, CheckCircle, Package, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Phone, Star, Truck, Clock, CheckCircle, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import despia from "despia-native";
 
 const LiveDemoSection = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -53,6 +54,12 @@ const LiveDemoSection = () => {
     if (!selectedCategory) return;
     setStep(2);
     setShowDealer(true);
+    
+    // Send local push notification using Despia
+    const message = "Your scrap order has been received! A dealer will be assigned shortly.";
+    const title = "Order Received";
+    const url = "";
+    despia(`sendlocalpushmsg://push.send?s=0=msg!${encodeURIComponent(message)}&!#${encodeURIComponent(title)}&!#${encodeURIComponent(url)}`);
     
     setTimeout(() => {
       setDealerAccepted(true);
