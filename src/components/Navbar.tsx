@@ -1,9 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Recycle } from "lucide-react";
+import { Menu, X, Recycle, User, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsOpen(false);
+  };
 
   const navLinks = [
     { name: "Home", href: "#home" },
@@ -42,12 +66,29 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
-              Login
-            </Button>
-            <Button variant="hero" size="sm">
-              Download App
-            </Button>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg">
+                  <User className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium truncate max-w-[120px]">
+                    {user.email?.split("@")[0]}
+                  </span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
+                  Login
+                </Button>
+                <Button variant="hero" size="sm" onClick={() => navigate("/auth")}>
+                  Download App
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -79,10 +120,29 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                <Button variant="ghost" className="justify-start">
-                  Login
-                </Button>
-                <Button variant="hero">Download App</Button>
+                {user ? (
+                  <>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg mb-2">
+                      <User className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        {user.email}
+                      </span>
+                    </div>
+                    <Button variant="ghost" onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="ghost" className="justify-start" onClick={() => { navigate("/auth"); setIsOpen(false); }}>
+                      Login
+                    </Button>
+                    <Button variant="hero" onClick={() => { navigate("/auth"); setIsOpen(false); }}>
+                      Download App
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
