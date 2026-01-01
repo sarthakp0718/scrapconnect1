@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, User, Phone, Star, Truck, Clock, CheckCircle, Package } from "lucide-react";
+import { MapPin, User, Phone, Star, Truck, Clock, CheckCircle, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const LiveDemoSection = () => {
@@ -8,6 +8,7 @@ const LiveDemoSection = () => {
   const [showDealer, setShowDealer] = useState(false);
   const [dealerAccepted, setDealerAccepted] = useState(false);
   const [step, setStep] = useState(1);
+  const [categoryPage, setCategoryPage] = useState(0);
 
   const categories = [
     { id: "iron", name: "Iron/Steel", emoji: "🔩", pricePerKg: 15, color: "destructive" },
@@ -16,7 +17,26 @@ const LiveDemoSection = () => {
     { id: "brass", name: "Brass", emoji: "🔔", pricePerKg: 300, color: "primary" },
     { id: "steel", name: "Stainless Steel", emoji: "🍴", pricePerKg: 60, color: "destructive" },
     { id: "lead", name: "Lead/Battery", emoji: "🔋", pricePerKg: 100, color: "primary" },
+    { id: "zinc", name: "Zinc", emoji: "⚙️", pricePerKg: 180, color: "primary" },
+    { id: "nickel", name: "Nickel", emoji: "🪙", pricePerKg: 350, color: "accent" },
+    { id: "tin", name: "Tin", emoji: "🥄", pricePerKg: 200, color: "primary" },
+    { id: "bronze", name: "Bronze", emoji: "🏆", pricePerKg: 280, color: "accent" },
+    { id: "cast-iron", name: "Cast Iron", emoji: "🍳", pricePerKg: 20, color: "destructive" },
+    { id: "ms-scrap", name: "MS Scrap", emoji: "🔧", pricePerKg: 25, color: "destructive" },
+    { id: "wire", name: "Copper Wire", emoji: "🧵", pricePerKg: 380, color: "accent" },
+    { id: "radiator", name: "Radiator", emoji: "🌡️", pricePerKg: 150, color: "primary" },
+    { id: "motor", name: "Electric Motor", emoji: "⚡", pricePerKg: 45, color: "destructive" },
+    { id: "transformer", name: "Transformer", emoji: "🔌", pricePerKg: 120, color: "primary" },
+    { id: "cable", name: "Cable Scrap", emoji: "📡", pricePerKg: 250, color: "accent" },
+    { id: "aluminum-sheet", name: "Aluminum Sheet", emoji: "📄", pricePerKg: 110, color: "primary" },
   ];
+
+  const itemsPerPage = 9;
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const currentCategories = categories.slice(
+    categoryPage * itemsPerPage,
+    (categoryPage + 1) * itemsPerPage
+  );
 
   const dealers = [
     { name: "Rajesh Kumar", rating: 4.8, distance: "1.2 km", phone: "+91 98765 43210", avatar: "RK", completedJobs: 234 },
@@ -29,18 +49,11 @@ const LiveDemoSection = () => {
   const bonusPoints = weight * 10;
   const magneticBonus = selectedCategoryData?.color === "destructive" ? Math.round(estimatedPrice * 0.2) : 0;
 
-  useEffect(() => {
-    if (selectedCategory && weight > 0 && step === 1) {
-      // Auto progress simulation
-    }
-  }, [selectedCategory, weight, step]);
-
   const handlePostScrap = () => {
     if (!selectedCategory) return;
     setStep(2);
     setShowDealer(true);
     
-    // Simulate dealer accepting after 2 seconds
     setTimeout(() => {
       setDealerAccepted(true);
       setStep(3);
@@ -53,6 +66,7 @@ const LiveDemoSection = () => {
     setShowDealer(false);
     setDealerAccepted(false);
     setStep(1);
+    setCategoryPage(0);
   };
 
   return (
@@ -113,27 +127,73 @@ const LiveDemoSection = () => {
           <div className="space-y-6">
             {/* Category Grid */}
             <div className="bg-background rounded-2xl p-6 shadow-card border border-border">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Package className="w-5 h-5 text-primary" />
-                Select Scrap Category
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {categories.map((category) => (
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Package className="w-5 h-5 text-primary" />
+                  Select Scrap Category
+                </h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {categoryPage + 1}/{totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCategoryPage(Math.max(0, categoryPage - 1))}
+                    disabled={categoryPage === 0 || step > 1}
+                    className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setCategoryPage(Math.min(totalPages - 1, categoryPage + 1))}
+                    disabled={categoryPage === totalPages - 1 || step > 1}
+                    className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-3">
+                {currentCategories.map((category) => (
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
                     disabled={step > 1}
-                    className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                    className={`p-4 rounded-xl border-2 transition-all duration-300 text-left group ${
                       selectedCategory === category.id
                         ? "border-primary bg-primary/10 shadow-lg scale-105"
                         : "border-border hover:border-primary/50 hover:bg-muted/50"
                     } ${step > 1 ? "opacity-60 cursor-not-allowed" : ""}`}
                   >
-                    <div className="text-2xl mb-2">{category.emoji}</div>
-                    <div className="font-medium text-sm">{category.name}</div>
-                    <div className="text-xs text-muted-foreground">₹{category.pricePerKg}/kg</div>
+                    <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{category.emoji}</div>
+                    <div className="font-medium text-sm truncate">{category.name}</div>
+                    <div className={`text-xs font-semibold ${
+                      category.color === "accent" ? "text-accent" : 
+                      category.color === "destructive" ? "text-destructive" : "text-primary"
+                    }`}>
+                      ₹{category.pricePerKg}/kg
+                    </div>
                   </button>
                 ))}
+              </div>
+
+              {/* Category Stats */}
+              <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{categories.length} categories available</span>
+                <div className="flex gap-3">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-destructive"></span>
+                    Ferrous
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                    Non-Ferrous
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-accent"></span>
+                    Premium
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -144,6 +204,13 @@ const LiveDemoSection = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-3xl font-bold text-primary">{weight} kg</span>
                   <div className="flex gap-2">
+                    <button 
+                      onClick={() => setWeight(Math.max(1, weight - 5))}
+                      disabled={step > 1}
+                      className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold hover:bg-muted/80 disabled:opacity-50"
+                    >
+                      -5
+                    </button>
                     <button 
                       onClick={() => setWeight(Math.max(1, weight - 1))}
                       disabled={step > 1}
@@ -158,6 +225,13 @@ const LiveDemoSection = () => {
                     >
                       +
                     </button>
+                    <button 
+                      onClick={() => setWeight(Math.min(100, weight + 5))}
+                      disabled={step > 1}
+                      className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold hover:bg-muted/80 disabled:opacity-50"
+                    >
+                      +5
+                    </button>
                   </div>
                 </div>
                 <input
@@ -167,10 +241,13 @@ const LiveDemoSection = () => {
                   value={weight}
                   onChange={(e) => setWeight(Number(e.target.value))}
                   disabled={step > 1}
-                  className="w-full h-2 bg-muted rounded-full appearance-none cursor-pointer accent-primary disabled:opacity-50"
+                  className="w-full h-3 bg-muted rounded-full appearance-none cursor-pointer accent-primary disabled:opacity-50"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>1 kg</span>
+                  <span>25 kg</span>
+                  <span>50 kg</span>
+                  <span>75 kg</span>
                   <span>100 kg</span>
                 </div>
               </div>
