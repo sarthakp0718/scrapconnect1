@@ -5,7 +5,6 @@ const HeroSection = () => {
   const stats = [
     { value: "10,000+", label: "kg recycled monthly", icon: "♻️" },
     { value: "₹8-₹450", label: "per kg", icon: "💰" },
-    { value: "500+", label: "active users", icon: "👥" },
   ];
 
   return (
@@ -55,7 +54,7 @@ const HeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 pt-8 animate-slide-up animation-delay-400">
+            <div className="grid grid-cols-2 gap-4 pt-8 animate-slide-up animation-delay-400">
               {stats.map((stat, index) => (
                 <div
                   key={index}
