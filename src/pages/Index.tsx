@@ -5,6 +5,7 @@ import ProblemSection from "@/components/ProblemSection";
 import SolutionSection from "@/components/SolutionSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import FeaturesSection from "@/components/FeaturesSection";
+import SmartDustbinSection from "@/components/SmartDustbinSection";
 import LiveDemoSection from "@/components/LiveDemoSection";
 import PricingSection from "@/components/PricingSection";
 import CTASection from "@/components/CTASection";
@@ -45,6 +46,7 @@ const Index = () => {
         <SolutionSection />
         <HowItWorksSection />
         <FeaturesSection />
+        <SmartDustbinSection />
         <LiveDemoSection />
         <PricingSection />
         <CTASection />
