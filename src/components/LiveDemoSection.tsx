@@ -10,6 +10,7 @@ const LiveDemoSection = () => {
   const [dealerAccepted, setDealerAccepted] = useState(false);
   const [step, setStep] = useState(1);
   const [categoryPage, setCategoryPage] = useState(0);
+  const [platformFee, setPlatformFee] = useState<number>(0);
 
   const categories = [
     { id: "iron", name: "Iron/Steel", emoji: "🔩", pricePerKg: 15, color: "destructive" },
@@ -49,14 +50,20 @@ const LiveDemoSection = () => {
   const estimatedPrice = selectedCategoryData ? selectedCategoryData.pricePerKg * weight : 0;
   const bonusPoints = weight * 10;
   const magneticBonus = selectedCategoryData?.color === "destructive" ? Math.round(estimatedPrice * 0.2) : 0;
+  const finalEarnings = estimatedPrice + magneticBonus - platformFee;
 
   const handlePostScrap = () => {
     if (!selectedCategory) return;
+    
+    // Generate random platform fee between 1-10 rupees
+    const fee = Math.floor(Math.random() * 10) + 1;
+    setPlatformFee(fee);
+    
     setStep(2);
     setShowDealer(true);
     
     // Send local push notification using Despia
-    const message = "Your scrap order has been received! A dealer will be assigned shortly.";
+    const message = `Your scrap order has been received! Platform fee: ₹${fee}. A dealer will be assigned shortly.`;
     const title = "Order Received";
     const url = "";
     despia(`sendlocalpushmsg://push.send?s=0=msg!${encodeURIComponent(message)}&!#${encodeURIComponent(title)}&!#${encodeURIComponent(url)}`);
@@ -74,6 +81,7 @@ const LiveDemoSection = () => {
     setDealerAccepted(false);
     setStep(1);
     setCategoryPage(0);
+    setPlatformFee(0);
   };
 
   return (
@@ -275,6 +283,10 @@ const LiveDemoSection = () => {
                       <span className="font-semibold">+₹{magneticBonus}</span>
                     </div>
                   )}
+                  <div className="flex justify-between items-center text-orange-500">
+                    <span>📋 Platform Fee</span>
+                    <span className="font-semibold">{platformFee > 0 ? `-₹${platformFee}` : '₹1-10'}</span>
+                  </div>
                   <div className="flex justify-between items-center text-primary">
                     <span>🎁 Reward Points</span>
                     <span className="font-semibold">+{bonusPoints} pts</span>
@@ -282,7 +294,9 @@ const LiveDemoSection = () => {
                   <div className="border-t border-border pt-3 mt-3">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold">Total Earnings</span>
-                      <span className="text-2xl font-bold text-primary">₹{estimatedPrice + magneticBonus}</span>
+                      <span className="text-2xl font-bold text-primary">
+                        {platformFee > 0 ? `₹${finalEarnings}` : `₹${estimatedPrice + magneticBonus - 10} - ₹${estimatedPrice + magneticBonus - 1}`}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -467,7 +481,8 @@ const LiveDemoSection = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-sm text-muted-foreground">You'll earn</div>
-                          <div className="font-bold text-lg text-primary">₹{estimatedPrice + magneticBonus}</div>
+                          <div className="font-bold text-lg text-primary">₹{finalEarnings}</div>
+                          <div className="text-xs text-orange-500">Fee: ₹{platformFee}</div>
                         </div>
                       </div>
 
